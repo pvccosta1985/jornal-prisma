@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISMA — um fato, três leituras · 14/07/2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1F3F5;
+    --card:#FFFFFF;
+    --ink:#12181F;
+    --ink-2:#4A5560;
+    --line:#D8DEE4;
+    --esq:#D6453D;
+    --lib:#B07C10;
+    --dir:#1971C2;
+    --esq-bg:#FBEAE9;
+    --lib-bg:#F9F1DC;
+    --dir-bg:#E7F1FA;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    line-height:1.55;
+    padding-bottom:64px;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Masthead ---------- */
+  header{padding:28px 0 0}
+  .prisma-bar{
+    height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:18px;
+  }
+  .prisma-bar span{flex:1}
+  .prisma-bar .p1{background:var(--esq);transform:skewX(-18deg) scaleX(1.06)}
+  .prisma-bar .p2{background:var(--lib);transform:skewX(-18deg) scaleX(1.06)}
+  .prisma-bar .p3{background:var(--dir);transform:skewX(-18deg) scaleX(1.06)}
+  h1.masthead{
+    font-family:'Archivo Black','Arial Black',sans-serif;
+    font-size:clamp(2.4rem,7vw,4.2rem);
+    letter-spacing:-.02em;line-height:.95;
+  }
+  .masthead .beam{
+    background:linear-gradient(100deg,var(--esq) 0 33%,var(--lib) 33% 66%,var(--dir) 66% 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .tagline{margin-top:6px;color:var(--ink-2);font-size:.95rem}
+  .edition{
+    margin-top:14px;padding:10px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;
+    font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);
+  }
+
+  /* ---------- Section titles ---------- */
+  .sec-title{
+    font-family:'Archivo Black','Arial Black',sans-serif;
+    font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em;
+    margin:34px 0 14px;display:flex;align-items:center;gap:10px;
+  }
+  .sec-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ---------- Capa: mundo ---------- */
+  .world-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .w-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .w-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(18,24,31,.08)}
+  .w-kicker{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2)}
+  .w-card h3{font-size:1.02rem;line-height:1.3;font-weight:700}
+  .w-card p{font-size:.85rem;color:var(--ink-2);flex:1}
+  .w-card .cover{border-radius:9px;overflow:hidden;line-height:0}
+  .src-link{
+    font-size:.8rem;font-weight:600;text-decoration:none;color:var(--dir);
+  }
+  .src-link:hover{text-decoration:underline}
+  .src-note{font-size:.72rem;color:var(--ink-2)}
+
+  /* ---------- Brasil: cards de três leituras ---------- */
+  .story{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    margin-bottom:22px;overflow:hidden;
+  }
+  .story-head{padding:18px 20px 0}
+  .story-kicker{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2)}
+  .story h2{font-size:1.35rem;line-height:1.25;margin:6px 0 10px;font-weight:700}
+  .fact{
+    background:var(--paper);border-left:4px solid var(--ink);
+    padding:10px 14px;border-radius:0 8px 8px 0;font-size:.9rem;margin-bottom:14px;
+  }
+  .fact strong{font-weight:700}
+
+  .tabs{display:flex;border-top:1px solid var(--line)}
+  .tab{
+    flex:1;appearance:none;border:none;background:transparent;cursor:pointer;
+    padding:12px 8px;font:inherit;font-weight:700;font-size:.85rem;
+    border-bottom:3px solid transparent;color:var(--ink-2);
+  }
+  .tab:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+  .tab[aria-selected="true"].t-esq{color:var(--esq);border-bottom-color:var(--esq);background:var(--esq-bg)}
+  .tab[aria-selected="true"].t-lib{color:var(--lib);border-bottom-color:var(--lib);background:var(--lib-bg)}
+  .tab[aria-selected="true"].t-dir{color:var(--dir);border-bottom-color:var(--dir);background:var(--dir-bg)}
+
+  .panel{display:none;padding:16px 20px 18px}
+  .panel.active{display:block}
+  .panel .resumo{font-size:.95rem;margin-bottom:10px}
+  .detail{display:none;font-size:.9rem;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:10px;margin-top:4px}
+  .detail.open{display:block}
+  .panel-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .btn-detail{
+    appearance:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;
+    padding:6px 14px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;
+  }
+  .btn-detail:hover{border-color:var(--ink)}
+  .btn-detail:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .panel .sources{font-size:.8rem;display:flex;gap:12px;flex-wrap:wrap}
+  .panel .sources a{font-weight:600;text-decoration:none}
+  .panel.pn-esq .sources a{color:var(--esq)}
+  .panel.pn-lib .sources a{color:var(--lib)}
+  .panel.pn-dir .sources a{color:var(--dir)}
+  .panel .sources a:hover{text-decoration:underline}
+  .lens-note{font-size:.72rem;color:var(--ink-2);margin-top:8px}
+
+  /* ---------- Lens rail (seletor global) ---------- */
+  .lens-rail{
+    position:fixed;left:0;top:0;bottom:0;width:168px;
+    background:var(--ink);display:flex;flex-direction:column;gap:10px;
+    justify-content:center;padding:24px 14px;z-index:50;
+  }
+  .rail-label{
+    color:#8B97A3;font-size:.68rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.14em;margin-bottom:4px;
+  }
+  .lens-rail button{
+    appearance:none;border:1px solid rgba(241,243,245,.28);background:transparent;
+    border-radius:0;padding:12px 14px;font:inherit;font-size:.78rem;font-weight:700;
+    cursor:pointer;color:#F1F3F5;white-space:nowrap;text-align:left;width:100%;
+  }
+  .lens-rail button:hover{border-color:#F1F3F5}
+  .lens-rail button:focus-visible{outline:3px solid #F1F3F5;outline-offset:2px}
+  .lens-rail button[aria-pressed="true"].r-esq{background:var(--esq);border-color:var(--esq);color:#fff}
+  .lens-rail button[aria-pressed="true"].r-lib{background:var(--lib);border-color:var(--lib);color:#fff}
+  .lens-rail button[aria-pressed="true"].r-dir{background:var(--dir);border-color:var(--dir);color:#fff}
+  .lens-rail button[aria-pressed="true"].r-all{background:#F1F3F5;border-color:#F1F3F5;color:var(--ink)}
+  @media (min-width:1241px){
+    body{padding-left:168px}
+  }
+  @media (max-width:1240px){
+    .lens-rail{
+      left:0;right:0;top:auto;bottom:0;width:auto;flex-direction:row;justify-content:center;
+      padding:10px 8px;gap:6px;
+    }
+    .rail-label{display:none}
+    .lens-rail button{width:auto;text-align:center;font-size:.72rem;padding:9px 10px}
+    body{padding-bottom:110px}
+  }
+  /* Modo comparação: as 3 leituras empilhadas */
+  .story.compare .panel{display:block;border-top:1px solid var(--line)}
+  .story.compare .panel::before{
+    display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;
+  }
+  .story.compare .pn-esq::before{content:"\25C0 Esquerda";color:var(--esq)}
+  .story.compare .pn-lib::before{content:"\25C6 Centro";color:var(--lib)}
+  .story.compare .pn-dir::before{content:"\25B6 Direita";color:var(--dir)}
+  .story.compare .tabs{display:none}
+
+  /* ---------- Barra de óticas ---------- */
+  .scope-bar{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+  .scope{
+    appearance:none;border:1px solid var(--ink);background:transparent;border-radius:0;
+    padding:8px 18px;font:inherit;font-size:.8rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.06em;cursor:pointer;color:var(--ink);
+  }
+  .scope.active{background:var(--ink);color:#fff}
+  .scope:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  section[data-scope].hidden{display:none}
+  .official-tag{font-size:.68rem;font-weight:700;color:#8A6D00;text-transform:uppercase;letter-spacing:.06em}
+  .archive-banner{
+    background:var(--card);border:1px dashed var(--ink-2);border-radius:var(--radius);
+    padding:14px 18px;margin-bottom:18px;font-size:.85rem;color:var(--ink-2);
+  }
+  .archive-banner strong{color:var(--ink)}
+
+  footer{
+    margin-top:40px;padding-top:16px;border-top:2px solid var(--ink);
+    font-size:.78rem;color:var(--ink-2);
+  }
+  footer p{margin-bottom:6px}
+
+  @media (prefers-reduced-motion: reduce){
+    .w-card{transition:none}
+  }
+  @media (max-width:560px){
+    .tab{font-size:.75rem;padding:10px 4px}
+    .story h2{font-size:1.15rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="prisma-bar" aria-hidden="true"><span class="p1"></span><span class="p2"></span><span class="p3"></span></div>
+    <h1 class="masthead">PRISMA<span class="beam">///</span></h1>
+    <p class="tagline">Um fato, três leituras — Esquerda · Centro · Direita</p>
+    <div class="edition">
+      <span>Terça-feira, 14 de julho de 2026</span>
+      <span>Edição de 14/07/2026</span>
+    </div>
+  </header>
+
+  <nav class="lens-rail" aria-label="Escolher lente de leitura para todo o jornal">
+    <span class="rail-label">Lente de leitura</span>
+    <button class="r-esq" aria-pressed="false" data-lens="0">◀ Esquerda</button>
+    <button class="r-lib" aria-pressed="false" data-lens="1">◆ Centro</button>
+    <button class="r-dir" aria-pressed="false" data-lens="2">▶ Direita</button>
+    <button class="r-all" aria-pressed="true" data-lens="all">☰ As 3 juntas</button>
+  </nav>
+
+  <div class="scope-bar" aria-label="Escolher ótica de cobertura">
+    <button class="scope active" data-scope="all">Tudo</button>
+    <button class="scope" data-scope="brasil">Brasil</button>
+    <button class="scope" data-scope="mundo">Mundo</button>
+    <button class="scope" data-scope="ceara">Ceará</button>
+    <button class="scope" data-scope="esporte">Esporte</button>
+    <button class="scope" data-scope="ontem">Ontem</button>
+  </div>
+
+  <!-- =============== CAPA: MUNDO =============== -->
+  <section data-scope="mundo">
+  <h2 class="sec-title">Capa · O mundo hoje</h2>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: EUA retomam bloqueio ao Irã no Estreito de Ormuz">
+          <rect width="320" height="110" fill="#12181F"/>
+          <path d="M30 90 L80 40 L130 70 L180 30 L230 60 L290 20" stroke="#D6453D" stroke-width="4" fill="none"/>
+          <circle cx="80" cy="40" r="6" fill="#F1F3F5"/><circle cx="230" cy="60" r="6" fill="#F1F3F5"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">EUA · IRÃ · ORMUZ</text>
+        </svg>
+      </div>
+      <span class="w-kicker">EUA · Irã</span>
+      <h3>Cessar-fogo com o Irã "desmorona": Trump retoma bloqueio ao Estreito de Ormuz e propõe cobrar "pedágio" de 20%</h3>
+      <p>Após o Irã atingir dois navios-tanque no Estreito de Ormuz, os EUA retomaram nesta segunda (13) ataques a defesas antiaéreas e radares iranianos e reinstauraram o bloqueio naval à região; Trump diz que países que dependem do petróleo do estreito devem pagar uma taxa de 20% pela "proteção" americana, ideia já criticada por aliados como uma cobrança disfarçada de pedágio.</p>
+      <a class="src-link" href="https://edition.cnn.com/2026/07/13/world/live-news/iran-war-trump" target="_blank" rel="noopener">Ler na CNN →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Trump anuncia campanha contra o TPI">
+          <rect width="320" height="110" fill="#4A5560"/>
+          <rect x="120" y="20" width="80" height="70" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <path d="M120 40 H200 M120 60 H200" stroke="#F1F3F5" stroke-width="3"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">EUA · TPI · HAIA</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Estados Unidos · Justiça internacional</span>
+      <h3>Governo Trump lança campanha para "desmantelar" o Tribunal Penal Internacional após juízes processarem sanções dos EUA</h3>
+      <p>O Departamento de Estado anunciou nesta segunda (13) uma resposta "de governo inteiro" para neutralizar o TPI, cogitando vetos de viagem, cassação de vistos e novas sanções contra autoridades da corte; a medida vem dias depois de três juízes do tribunal processarem a Casa Branca em Nova York, alegando que as sanções de 2025 são retaliatórias e ilegais.</p>
+      <a class="src-link" href="https://www.aljazeera.com/news/2026/7/13/trump-administration-vows-to-disable-international-criminal-court" target="_blank" rel="noopener">Ler na Al Jazeera →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: coalizão europeia antimísseis para a Ucrânia">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <path d="M160 20 L190 90 H130 Z" fill="#F1F3F5"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">PARIS · UCRÂNIA</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Ucrânia · Europa</span>
+      <h3>Ucrânia e mais 9 países lançam coalizão antimísseis balísticos, em cúpula com Zelensky e Macron em Paris</h3>
+      <p>Dinamarca, França, Alemanha, Itália, Holanda, Noruega, Espanha, Suécia e Reino Unido se uniram à Ucrânia para desenvolver uma capacidade europeia de defesa antimísseis, aproveitando a experiência ucraniana de guerra; o encontro reuniu cerca de 25 chefes de Estado da "Coalizão de Boa Vontade", enquanto Putin prometeu retaliação "várias vezes mais forte" a ataques ucranianos em território russo.</p>
+      <a class="src-link" href="https://thehill.com/homenews/ap/ap-international/ap-zelenskyy-will-discuss-ukraine-support-and-air-defenses-with-european-leaders-in-paris/" target="_blank" rel="noopener">Ler na Associated Press (via The Hill) →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Reino Unido adere a empréstimo da UE à Ucrânia">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <circle cx="120" cy="55" r="30" fill="none" stroke="#12181F" stroke-width="4"/>
+          <circle cx="200" cy="55" r="30" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="10" font-weight="bold">UE · REINO UNIDO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">União Europeia · Reino Unido</span>
+      <h3>Reino Unido adere ao empréstimo de € 90 bilhões da UE para a Ucrânia, com "contribuição justa" de Londres</h3>
+      <p>O acordo, anunciado nesta segunda (13) durante a cúpula de Paris, permite que a Ucrânia compre armamento de empresas britânicas como BAE Systems e QinetiQ usando os recursos do empréstimo; em troca, Londres arcará com parte dos juros anuais, estimados em € 3 bilhões, proporcional aos contratos que suas empresas conseguirem.</p>
+      <a class="src-link" href="https://www.euronews.com/my-europe/2026/07/13/uk-joins-eus-90-billion-loan-for-ukraine-with-promise-of-fair-contribution" target="_blank" rel="noopener">Ler na Euronews →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: morte do ator Sam Neill">
+          <rect width="320" height="110" fill="#12181F"/>
+          <circle cx="160" cy="45" r="20" fill="#F1F3F5"/>
+          <path d="M130 90 q30 -30 60 0" stroke="#F1F3F5" stroke-width="5" fill="none"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">CINEMA · NOVA ZELÂNDIA</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Cinema · Nova Zelândia</span>
+      <h3>Sam Neill, de "Jurassic Park", morre aos 78 anos em Sydney</h3>
+      <p>O ator neozelandês, que havia anunciado em abril estar livre de um câncer no sangue tratado desde 2023, morreu na segunda (13) de forma "súbita e inesperada", segundo nota da família; ficou mundialmente conhecido como o paleontólogo Alan Grant na franquia "Jurassic Park" e também estrelou "O Piano" e a série "Peaky Blinders".</p>
+      <a class="src-link" href="https://www.cnn.com/2026/07/13/entertainment/sam-neill-jurassic-park-dead-intl-hnk" target="_blank" rel="noopener">Ler na CNN →</a>
+    </article>
+
+  </div>
+  </section>
+
+  <section data-scope="brasil">
+  <!-- =============== BRASIL: TRÊS LEITURAS =============== -->
+  <h2 class="sec-title">Brasil · Um fato, três leituras</h2>
+
+  <!-- STORY 1 -->
+  <article class="story" data-story>
+    <div class="story-head">
+      <span class="story-kicker">Justiça / Eleições 2026 · Caso Bolsonaro</span>
+      <h2>Moraes suspende por 90 dias visitas de Flávio Bolsonaro ao pai após carta lida em live viralizar nas redes</h2>
+      <p class="fact"><strong>O fato:</strong> o ministro Alexandre de Moraes, do STF, determinou nesta segunda (13) a suspensão por 90 dias das visitas do senador Flávio Bolsonaro (PL-RJ) ao ex-presidente Jair Bolsonaro, que cumpre prisão domiciliar humanitária desde março. A medida foi motivada pela divulgação, no sábado (11), de uma carta escrita por Jair chamando o filho de "porta-voz" e "melhor opção" para a Presidência — o que Moraes considerou desvio de finalidade do direito de visita e possível descumprimento da proibição de Bolsonaro usar redes sociais, mesmo por terceiros. O ministro deu 48 horas para a defesa esclarecer se o ex-presidente sabia da divulgação e enviou o caso ao procurador-geral eleitoral para apurar possível propaganda antecipada. Flávio reagiu em live classificando a decisão como tentativa de Moraes de "interferir nas eleições".</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Leituras da notícia 1">
+      <button class="tab t-esq" role="tab" aria-selected="true" data-tab="0">◀ Esquerda</button>
+      <button class="tab t-lib" role="tab" aria-selected="false" data-tab="1">◆ Centro</button>
+      <button class="tab t-dir" role="tab" aria-selected="false" data-tab="2">▶ Direita</button>
+    </div>
+    <div class="panel pn-esq active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>estratégia bolsonarista mal calculada, com custo político para o próprio grupo</strong>: a Revista Fórum descreve o episódio como uma tentativa de driblar, via direito de visita, a proibição de Jair Bolsonaro usar redes sociais — que resultou na perda do próprio canal de comunicação que o bolsonarismo tentava preservar.</p>
+      <div class="detail">A cobertura destaca que Moraes considerou Flávio reincidente, citando um episódio semelhante em agosto de 2025, e nota que aliados do senador reconheceram, em conversas com a imprensa, que a divulgação da carta foi feita sem consulta prévia à equipe jurídica — um "tiro no pé" segundo a reportagem, que também menciona uma live posterior em que Flávio perdeu o controle e disparou xingamentos contra Moraes e Lula.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://revistaforum.com.br/politica/moraes-proibe-visitas-flavio-bolsonaro/" target="_blank" rel="noopener">Revista Fórum</a>
+          <a href="https://revistaforum.com.br/politica/flavio-bolsonaro-live-reacao-moraes/" target="_blank" rel="noopener">Revista Fórum</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-lib active" role="tabpanel">
+      <p class="resumo">Enquadramento <strong>factual-institucional</strong>: a Agência Brasil relata a decisão citando diretamente o texto do ministro, que concluiu que a "conduta irregular" de Flávio "desrespeitou expressa vedação judicial e configurou ostensivo desvio de finalidade no exercício de seu direito de visita" — sem qualificar o episódio como perseguição nem antecipar o desfecho da apuração sobre Jair Bolsonaro.</p>
+      <div class="detail">A reportagem detalha que Moraes deu 48 horas para a defesa de Jair Bolsonaro se manifestar sobre eventual descumprimento da medida cautelar de prisão domiciliar, e reproduz a fundamentação jurídica da decisão, amparada no parágrafo 1º do artigo 41 da Lei de Execuções Penais, que prevê a suspensão do direito de visita em caso de desvio de finalidade.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://agenciabrasil.ebc.com.br/justica/noticia/2026-07/moraes-suspende-visitas-de-flavio-bolsonaro-na-prisao-domiciliar" target="_blank" rel="noopener">Agência Brasil</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-dir active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>decisão judicial com efeito direto sobre a disputa eleitoral</strong>: o Metrópoles dá amplo espaço à fala do próprio Flávio, para quem "o que eu percebo é que Alexandre de Moraes quer interferir nas eleições. Quer, obviamente, que eu não seja candidato" — destacando também o temor relatado por Michelle Bolsonaro de que o episódio leve à revogação da prisão domiciliar humanitária do pai.</p>
+      <div class="detail">A reportagem questiona a assimetria com o caso Lula, citando publicação nas redes de um deputado bolsonarista que lembra que, preso em 2018, Lula "recebeu centenas de visitas e manteve interlocução política com seus aliados", inclusive manifestando-se por carta durante a campanha eleitoral daquele ano — comparação usada para sustentar a tese de tratamento desigual.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.metropoles.com/brasil/moraes-suspende-visita-de-flavio-a-bolsonaro-e-da-48h-para-explicar-carta" target="_blank" rel="noopener">Metrópoles</a>
+        </span>
+      </div>
+    </div>
+  </article>
+
+  <!-- STORY 2 -->
+  <article class="story" data-story>
+    <div class="story-head">
+      <span class="story-kicker">Comércio exterior · Tarifaço dos EUA</span>
+      <h2>A um dia do prazo, Lula diz que "não vai ter tarifaço" enquanto governo prepara resposta para cenário de tarifa confirmada</h2>
+      <p class="fact"><strong>O fato:</strong> o governo dos EUA tem até esta quarta-feira (15/7) para decidir se aplica as tarifas adicionais de 25% e 12,5% sobre produtos brasileiros recomendadas pela investigação da Seção 301 do USTR. Nesta segunda (13), Lula declarou a jornalistas em São José dos Campos (SP) que "não vai ter tarifaço", mas integrantes do próprio governo seguem tratando a confirmação da tarifa como cenário mais provável, após declarações do representante comercial dos EUA, Jamieson Greer, de que os dois países "ainda estão distantes de um acordo". Segundo o Painel da Folha, o Palácio do Planalto já traça três cenários de resposta, com defesa do Pix, da soberania nacional e tentativa de ampliar a lista de produtos isentos; uma última reunião virtual entre negociadores brasileiros e americanos ainda é esperada antes da decisão.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Leituras da notícia 2">
+      <button class="tab t-esq" role="tab" aria-selected="true" data-tab="0">◀ Esquerda</button>
+      <button class="tab t-lib" role="tab" aria-selected="false" data-tab="1">◆ Centro</button>
+      <button class="tab t-dir" role="tab" aria-selected="false" data-tab="2">▶ Direita</button>
+    </div>
+    <div class="panel pn-esq active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>governo tecnicamente preparado diante de uma decisão que não depende do Brasil</strong>: o Brasil 247 relata que o Planalto já traça uma reação a três cenários possíveis, "com defesa do Pix, da soberania nacional e busca pela ampliação da lista de produtos brasileiros isentos", tratando a postura brasileira como responsável frente a uma medida unilateral dos EUA.</p>
+      <div class="detail">A reportagem detalha que, na área ambiental, o governo pretende contestar dados sobre desmatamento com estatísticas oficiais, e que o Itamaraty já sinalizou que classificará a tarifa, se confirmada, como uma decisão sem justificativa técnica e de caráter político, associada a interesses eleitorais da oposição.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.brasil247.com/brasil/governo-prepara-reacao-a-tarifaco-de-trump/" target="_blank" rel="noopener">Brasil 247</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-lib active" role="tabpanel">
+      <p class="resumo">Enquadramento <strong>factual-institucional</strong>: a Agência Brasil registra a fala do presidente — "não vai ter tarifaço" — como resposta direta a uma pergunta de jornalista, sem contextualizá-la como previsão do governo, e nota que o Palácio do Planalto "informou que aguarda a decisão para definir uma eventual resposta" e segue tratando a confirmação das tarifas como cenário mais provável.</p>
+      <div class="detail">A reportagem situa a declaração no contexto de um evento técnico do presidente em São José dos Campos (SP), sem entrevista coletiva formal, e regista que a avaliação mais cautelosa dentro do próprio governo ganhou força após Jamieson Greer afirmar publicamente que Brasil e EUA seguem distantes de um acordo.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.rondoniadinamica.com/noticias/2026/07/em-semana-decisiva-sobre-novas-taxas-dos-eua-lula-diz-nao-acreditar-em-tarifaco,249175.shtml" target="_blank" rel="noopener">Agência Brasil</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-dir active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>indefinição do governo às vésperas do prazo, em meio à crise interna do Planalto e do bolsonarismo</strong>: o Metrópoles descreve a "semana decisiva" do governo Lula sem acordo à vista, registrando que o próprio Palácio do Planalto trabalha com dois cenários — tarifação confirmada ou adiamento como aceno ao pré-candidato Flávio Bolsonaro — e reproduz a nota da Secom que classifica o pedido de adiamento feito por Flávio como "traição à pátria".</p>
+      <div class="detail">A reportagem detalha o "mapa do caminho" apresentado pelo Brasil aos negociadores americanos, com reforço de controles em seis áreas questionadas pelos EUA, e nota que, apesar da fala otimista de Lula, auxiliares do presidente veem "pouca possibilidade de reversão do tarifaço" — um contraste que a cobertura não deixa de registrar.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.metropoles.com/mundo/governo-lula-entra-em-semana-decisiva-de-tarifaco-sem-acordo-a-vista" target="_blank" rel="noopener">Metrópoles</a>
+        </span>
+      </div>
+    </div>
+  </article>
+
+  </section>
+
+  <section data-scope="esporte">
+  <h2 class="sec-title">Esporte · Copa do Mundo 2026</h2>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: França x Espanha, semifinal de hoje">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <rect x="30" y="20" width="60" height="18" fill="#12181F"/><rect x="230" y="20" width="60" height="18" fill="#D6453D"/>
+          <path d="M90 29 H230" stroke="#F1F3F5" stroke-width="3"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">FRANÇA X ESPANHA · HOJE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Semifinal · Dallas Stadium</span>
+      <h3>França e Espanha, as duas favoritas ao título, se enfrentam nesta terça (14) na primeira semifinal</h3>
+      <p>É a primeira vez, desde a criação do ranking da Fifa em 1992, que as quatro seleções mais bem colocadas do mundo chegam às semifinais. Mbappé lidera o ataque mais artilheiro do torneio pela França, enquanto a Espanha chega com a defesa menos vazada — só um gol sofrido em seis jogos — e aposta no jovem Lamine Yamal, que soma atuações decisivas contra Portugal e Bélgica.</p>
+      <a class="src-link" href="https://www.espn.com/soccer/story/_/id/49341955/france-vs-spain-fifa-world-cup-2026-tv-channel-how-watch-kickoff-live-stream-injury-predicted-lineups" target="_blank" rel="noopener">Ler na ESPN →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Argentina x Inglaterra na quarta-feira">
+          <rect width="320" height="110" fill="#12181F"/>
+          <path d="M40 90 L100 30 L160 90 L220 30 L280 90" stroke="#F1F3F5" stroke-width="4" fill="none"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">ARGENTINA X INGLATERRA · 15/7</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Semifinal · Atlanta</span>
+      <h3>Argentina enfrenta a Inglaterra amanhã (15) em duelo inédito na fase eliminatória de Copas desde 2002</h3>
+      <p>Messi vive a expectativa de encarar a seleção inglesa pela primeira vez na carreira, num confronto que fecha o quadro de semifinalistas ao lado de França e Espanha. A Argentina chega embalada pela vitória sobre a Suíça na prorrogação, com gol de Julián Álvarez.</p>
+      <a class="src-link" href="https://www.foxsports.com/soccer/fifa-world-cup-men-france-vs-spain-jul-14-2026-game-boxscore-607931" target="_blank" rel="noopener">Ler na Fox Sports →</a>
+    </article>
+
+  </div>
+  </section>
+
+  <section data-scope="ceara">
+  <h2 class="sec-title">Ceará · Regional</h2>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: chapa governista do Ceará em negociação">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <circle cx="110" cy="55" r="22" fill="#F1F3F5"/><circle cx="210" cy="55" r="22" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">POLÍTICA · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Política · Eleições 2026</span>
+      <h3>Chapa governista de Elmano de Freitas segue sem vice e sem os dois nomes ao Senado definidos</h3>
+      <p>Elmano é, até agora, o único nome confirmado como pré-candidato à reeleição; a vice-governadoria e as vagas ao Senado seguem disputadas por PSB, PSD e MDB, partidos aliados que integram a base. Dirigentes do PT dizem que a prioridade é uma composição que "agregue" e evite descontentamento antes das convenções de julho.</p>
+      <a class="src-link" href="https://mais.opovo.com.br/jornal/politica/2026/07/13/nomes-do-pt-ceara-dizem-que-a-chapa-ainda-esta-sendo-construida-e-falam-em-composicao-que-agregue.html" target="_blank" rel="noopener">Ler no O POVO →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Transnordestina e radioterapia no Sertão Central">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <path d="M20 85 H300" stroke="#12181F" stroke-width="6"/>
+          <path d="M20 85 L60 60 M100 85 L140 60 M180 85 L220 60 M260 85 L300 60" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="10" font-weight="bold">INFRAESTRUTURA · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Infraestrutura · Saúde</span>
+      <h3>Na entrega de novo trecho da Transnordestina, Elmano anuncia radioterapia para o Sertão Central</h3>
+      <p>Durante evento com a presença do presidente Lula, o governador disse que a ferrovia vai "abrir uma nova fase de desenvolvimento" para o Ceará, facilitando o escoamento da produção de calçados — cerca de 25% do total nacional — até o Porto do Pecém, e anunciou a instalação de radioterapia na região, que já conta com tratamento oncológico.</p>
+      <a class="src-link" href="https://www.revistacamocim.com/2026/07/elmano-diz-que-transnordestina-vai.html" target="_blank" rel="noopener">Ler na Revista Camocim →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: segurança pública no Ceará">
+          <rect width="320" height="110" fill="#D6453D"/>
+          <path d="M160 20 l38 12 v22 c0 21 -17 33 -38 39 c-21 -6 -38 -18 -38 -39 v-22 Z" fill="#F1F3F5"/>
+          <text x="16" y="100" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">SEGURANÇA · CE · OFICIAL</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Segurança pública <span class="official-tag">· release oficial</span></span>
+      <h3>Governo do Ceará anuncia incorporação de mais de 2,7 mil novos agentes às forças de segurança</h3>
+      <p>Em balanço divulgado pelo Palácio da Abolição, o governador Elmano de Freitas atribuiu ao reforço do efetivo — junto a novos departamentos de investigação contra lavagem de dinheiro — reduções superiores a 50% nos homicídios, acima de 60% nos roubos e de mais de 70% nos roubos de veículos na Capital. Fonte é o próprio Governo do Estado — leia como comunicação oficial, não apuração independente.</p>
+      <a class="src-link" href="https://www.ce.gov.br/" target="_blank" rel="noopener">Ler no portal do Governo do Ceará →</a>
+    </article>
+
+  </div>
+  </section>
+
+
+
+  <!-- =============== ARQUIVO: EDIÇÃO DE ONTEM =============== -->
+  <section data-scope="ontem" class="hidden">
+  <h2 class="sec-title">Arquivo · Edição anterior (13/07/2026)</h2>
+  <div class="archive-banner">
+    <strong>Nota de transparência:</strong> esta aba guarda a edição imediatamente anterior do PRISMA (13/07/2026), preservada como arquivo consultável. O PRISMA é gerado sob demanda; a cada nova edição, a aba "Ontem" passa a arquivar a edição que acabou de ser substituída — por isso, aqui, deixou de constar o conteúdo da edição de 10/07/2026, que estava arquivada anteriormente.
+  </div>
+
+    <h3 class="sec-title" style="margin-top:0">Mundo · 13/07</h3>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: conflito EUA e Irã no Estreito de Ormuz">
+          <rect width="320" height="110" fill="#12181F"/>
+          <path d="M30 90 L80 40 L130 70 L180 30 L230 60 L290 20" stroke="#D6453D" stroke-width="4" fill="none"/>
+          <circle cx="80" cy="40" r="6" fill="#F1F3F5"/><circle cx="180" cy="30" r="6" fill="#F1F3F5"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">EUA · IRÃ · ORMUZ</text>
+        </svg>
+      </div>
+      <span class="w-kicker">EUA · Irã</span>
+      <h3>EUA fazem novos ataques ao Irã após Teerã atacar navio no Estreito de Ormuz</h3>
+      <p>Forças americanas atacaram novamente neste domingo (12), em retaliação a um ataque iraniano contra um navio de bandeira cipriota no Estreito de Ormuz. Uma delegação iraniana foi a Omã tentar retomar as negociações mediadas, após trocas de acusações sobre se o tráfego no estreito segue livre.</p>
+      <a class="src-link" href="https://www.cbsnews.com/live-updates/us-iran-war-trump-ceasefire-talks-strait-of-hormuz/" target="_blank" rel="noopener">Ler na CBS News →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: morte do senador Lindsey Graham">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <circle cx="160" cy="50" r="26" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <path d="M148 50 h24 M160 38 v24" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">EUA · SENADO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Estados Unidos · Senado</span>
+      <h3>Senador Lindsey Graham morre aos 71 anos após dissecção da aorta</h3>
+      <p>Aliado próximo de Trump e um dos últimos falcões da política externa republicana, Graham morreu na noite de sábado (11) após uma "doença súbita", horas depois de retornar de viagem à Ucrânia. Exame preliminar apontou dissecção da aorta ligada a doença cardíaca.</p>
+      <a class="src-link" href="https://www.npr.org/2026/07/12/nx-s1-5890790/us-sen-lindsey-graham-dies" target="_blank" rel="noopener">Ler na NPR →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: morte do ex-emir do Catar">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <path d="M160 20 l30 15 v25 c0 20 -14 32 -30 38 c-16 -6 -30 -18 -30 -38 v-25 Z" fill="#12181F"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">CATAR · SUCESSÃO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Catar</span>
+      <h3>Ex-emir do Catar, Sheikh Hamad bin Khalifa Al Thani, morre aos 74 anos</h3>
+      <p>Governante do país entre 1995 e 2013, Sheikh Hamad foi um dos arquitetos das ambições geopolíticas cataris na era do gás natural. A Diwan Amiri anunciou a morte neste domingo (12) em nota oficial.</p>
+      <a class="src-link" href="https://www.aljazeera.com/news/2026/7/12/former-emir-of-qatar-sheikh-hamad-bin-khalifa-al-thani-dies-at-74?traffic_source=rss" target="_blank" rel="noopener">Ler na Al Jazeera →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: incêndio em pub de Bangkok">
+          <rect width="320" height="110" fill="#12181F"/>
+          <path d="M100 90 q10 -40 30 -55 q20 15 30 55 Z" fill="#D6453D"/>
+          <path d="M150 90 q8 -30 22 -42 q14 12 22 42 Z" fill="#B07C10"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">TAILÂNDIA · BANGKOK</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Tailândia</span>
+      <h3>Incêndio em pub de Bangkok mata ao menos 27 pessoas e fere dezenas</h3>
+      <p>Um curto-circuito perto do palco teria provocado explosão e fumaça densa no estabelecimento no distrito de Chatuchak, no norte da capital tailandesa, na madrugada de segunda (13). Muitas vítimas foram encontradas perto dos banheiros, nos fundos do local.</p>
+      <a class="src-link" href="https://www.aljazeera.com/news/2026/7/12/fire-engulfs-popular-bangkok-pub-killing-27-people-and-injuring-63" target="_blank" rel="noopener">Ler na Al Jazeera →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: semifinais da Copa do Mundo">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <path d="M40 90 L100 30 L160 90 L220 30 L280 90" stroke="#F1F3F5" stroke-width="4" fill="none"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">COPA 2026 · SEMIS</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Copa do Mundo · Semifinais definidas</span>
+      <h3>Argentina bate Suíça na prorrogação e enfrenta Inglaterra; Espanha elimina Bélgica e pega a França</h3>
+      <p>Julián Álvarez marcou um golaço aos 22 minutos da prorrogação para o 3 a 1 sobre uma Suíça com um a menos, garantindo a vaga argentina contra a Inglaterra, na quarta (15), em Atlanta. Um dia antes, gol de Mikel Merino nos acréscimos havia eliminado a Bélgica, 2 a 1, colocando a Espanha diante da França na terça (14).</p>
+      <a class="src-link" href="https://www.espn.com/soccer/story/_/id/49348219/world-cup-2026-today-blog-13-07-2026-live-updates-news-fixtures-schedule-results-spain-france-england-argentina" target="_blank" rel="noopener">Ler na ESPN →</a>
+    </article>
+
+  </div>
+
+    <h3 class="sec-title">Brasil · 13/07</h3>
+
+  <!-- STORY 1 -->
+  <article class="story" data-story>
+    <div class="story-head">
+      <span class="story-kicker">Justiça / Operação Transparência · Caso Valdemar</span>
+      <h2>Dino bloqueia R$ 119 milhões de Valdemar Costa Neto por suposto direcionamento irregular de emendas; PGR foi contra a medida</h2>
+      <p class="fact"><strong>O fato:</strong> o ministro Flávio Dino, do STF, determinou em decisão de 6/7 (tornada pública em 10/7) o bloqueio de cerca de R$ 119,2 milhões em bens do presidente nacional do PL, Valdemar Costa Neto, e a suspensão da execução de 21 emendas parlamentares que, segundo a Polícia Federal, teriam sido indicadas por ele mesmo sem mandato — por meio de servidores da Câmara, entre eles Mariângela Fialek, ex-assessora de Arthur Lira. Dino cita "indícios veementes" de peculato-desvio e deu dez dias para Câmara, AGU e CGU informarem as providências tomadas. A Procuradoria-Geral da República se manifestou contra o bloqueio patrimonial, mas defendeu a continuidade das investigações. A defesa de Valdemar nega qualquer crime e diz que seu patrimônio pessoal, de cerca de R$ 2,5 milhões, é muito menor que o valor bloqueado.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Leituras da notícia 1">
+      <button class="tab t-esq" role="tab" aria-selected="true" data-tab="0">◀ Esquerda</button>
+      <button class="tab t-lib" role="tab" aria-selected="false" data-tab="1">◆ Centro</button>
+      <button class="tab t-dir" role="tab" aria-selected="false" data-tab="2">▶ Direita</button>
+    </div>
+    <div class="panel pn-esq active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>confirmação de um esquema de captura do orçamento público</strong>: o Brasil 247 detalha como três servidores teriam atuado como "longa manus" de Valdemar, tratando internamente as verbas como "emendas do Valdemar" ou "do VCN" em planilhas e mensagens, mesmo ele não tendo mandato parlamentar.</p>
+      <div class="detail">A cobertura reproduz trechos da decisão em que Dino afirma que Valdemar "parece ter atuado, até muito recentemente, como mandante do (re)direcionamento de valores públicos", e nota que o esquema operou entre junho de 2024 e março de 2026, com registros como "Ele tá querendo Turismos" atribuídos a um servidor negociando os valores.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.brasil247.com/geral/entenda-como-funcionava-o-esquema-de-desvio-de-emendas-parlamentares-liderado-por-valdemar-costa-neto/" target="_blank" rel="noopener">Brasil 247</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-lib active" role="tabpanel">
+      <p class="resumo">Enquadramento <strong>factual-institucional</strong>: a Agência Brasil relata a decisão como desdobramento da Operação Transparência, registrando a fala de Dino de que o ex-deputado "não tem direito à indicação de emendas" e that a "ascendência" atribuída a ele pelos servidores da Câmara "contrasta com a ausência de título jurídico" para dispor do orçamento público — sem qualificar o episódio como perseguição nem cravar culpa definitiva.</p>
+      <div class="detail">A reportagem destaca que a Agência Brasil procurou a assessoria do PL para comentar o caso e aguardava retorno até a publicação, e situa a decisão dentro do conjunto de medidas cautelares (suspensão de despesas, comunicação a municípios beneficiários) determinadas por Dino, sem entrar no mérito de uma condenação futura.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://agenciabrasil.ebc.com.br/justica/noticia/2026-07/dino-bloqueia-r-119-milhoes-de-valdemar-por-suspeitas-em-emendas" target="_blank" rel="noopener">Agência Brasil</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-dir active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>intervenção judicial indevida sobre atividade política legítima</strong>: a Gazeta do Povo dá amplo espaço à reação do presidente da Câmara, Hugo Motta, para quem a decisão de Dino "não identifica desvio, abuso ou aplicação irregular de verbas públicas" e se baseia em "inferências" que tentam "criminalizar a atividade política" — destacando ainda que a própria PGR foi contra o bloqueio patrimonial.</p>
+      <div class="detail">A reportagem cita a nota da defesa de Valdemar, segundo a qual a decisão "parte de premissas frágeis, inferências subjetivas" e representa uma "indevida criminalização da atividade político-partidária", e reforça que não há, segundo os advogados, qualquer prova de vantagem pessoal para o dirigente do PL nem de dolo comprovado.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.gazetadopovo.com.br/republica/motta-reage-a-decisao-de-dino-sobre-valdemar-e-acusa-stf-de-intervencao-judicial/" target="_blank" rel="noopener">Gazeta do Povo</a>
+          <a href="https://revistaoeste.com/politica/valdemar-contesta-bloqueio-de-r-120-milhoes-e-diz-nao-ter-esse-patrimonio/" target="_blank" rel="noopener">Revista Oeste</a>
+        </span>
+      </div>
+    </div>
+  </article>
+
+  <!-- STORY 2 -->
+  <article class="story" data-story>
+    <div class="story-head">
+      <span class="story-kicker">Comércio exterior · Tarifaço dos EUA</span>
+      <h2>A três dias do prazo, Brasil e EUA seguem com "distância considerável" sobre tarifa de 25% a produtos brasileiros</h2>
+      <p class="fact"><strong>O fato:</strong> o USTR (Escritório do Representante Comercial dos EUA) tem até 15 de julho — esta quarta-feira — para decidir se aplica uma tarifa adicional de 25% sobre produtos brasileiros, recomendada em investigação da Seção 301 que cita, entre outros pontos, decisões judiciais brasileiras contra redes sociais americanas e o sistema Pix. O representante comercial dos EUA, Jamieson Greer, disse no dia 9/7 que as posições dos dois países seguem distantes. Governo brasileiro e equipe do USTR teriam uma nova rodada de negociação técnica prevista para esta semana, segundo o Ministério do Desenvolvimento, Indústria e Comércio; o Palácio do Planalto avalia como cenário mais provável que a tarifa seja aplicada, ainda que com exceções pontuais.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Leituras da notícia 2">
+      <button class="tab t-esq" role="tab" aria-selected="true" data-tab="0">◀ Esquerda</button>
+      <button class="tab t-lib" role="tab" aria-selected="false" data-tab="1">◆ Centro</button>
+      <button class="tab t-dir" role="tab" aria-selected="false" data-tab="2">▶ Direita</button>
+    </div>
+    <div class="panel pn-esq active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>tarifaço como retaliação política dos EUA</strong>: a ICL Notícias destaca a avaliação, dentro do próprio governo, de que Washington pode calibrar o anúncio para favorecer eleitoralmente o senador Flávio Bolsonaro — que já pediu nos EUA o adiamento da tarifa por 180 dias — e nota que empresários brasileiros já tratam a sobretaxa como praticamente certa.</p>
+      <div class="detail">A reportagem reproduz a leitura de integrantes do Planalto de que, mesmo com concessões pontuais em alguns setores, o USTR não estaria levando em conta os argumentos técnicos apresentados pelo Brasil, o que reforça a suspeita governista de que a decisão tem motivação política, não puramente comercial.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://iclnoticias.com.br/tarifaco-trump-brasil-manobra-flavio/" target="_blank" rel="noopener">ICL Notícias</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-lib active" role="tabpanel">
+      <p class="resumo">Enquadramento <strong>factual-institucional</strong>: a Agência Brasil relata a quarta rodada de negociação de alto nível entre o secretário Márcio Elias Rosa e Jamieson Greer como "construtiva", mas cita a admissão do próprio ministro de que "o tempo corre contra" e que o Brasil deve permanecer na mesa técnica "para não cair no equívoco daqueles que patrocinam o unilateralismo" — sem atribuir a demora a um único lado.</p>
+      <div class="detail">A matéria reproduz a crítica de Márcio Elias Rosa a brasileiros que, segundo ele, "levam disputas políticas para uma negociação comercial", num comentário que mira, sem citar nomes, tanto a atuação de opositores nos EUA quanto discursos do próprio governo — e reafirma o compromisso do Brasil com o multilateralismo nas negociações em curso.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://agenciabrasil.ebc.com.br/economia/noticia/2026-07/brasil-confirma-nova-rodada-de-negociacao-com-eua-sobre-tarifas" target="_blank" rel="noopener">Agência Brasil</a>
+        </span>
+      </div>
+    </div>
+    <div class="panel pn-dir active" role="tabpanel">
+      <p class="resumo">Enquadramento de <strong>reação desproporcional de Trump somada a reação "intempestiva" de Lula</strong>: em editorial, a Gazeta do Povo classifica a tarifa de Trump como desproporcional — por punir setores inteiros da economia pelos "abusos de algumas autoridades" — mas também critica a resposta do governo brasileiro, que qualifica de "infantil" e oportunista do ponto de vista eleitoral.</p>
+      <div class="detail">O texto argumenta que, se Trump quer expor decisões do STF que considera abusivas, deveria "sancionar individualmente" ministros como Alexandre de Moraes, em vez de taxar setores inteiros da economia brasileira — e lembra que, no primeiro tarifaço, Lula "teve mais sorte que juízo", já que o recuo americano se deveu à inflação nos EUA, não às provocações brasileiras.</div>
+      <div class="panel-actions">
+        <button class="btn-detail" data-detail>Detalhar +</button>
+        <span class="sources">Origem:
+          <a href="https://www.gazetadopovo.com.br/opiniao/editoriais/novo-tarifaco-trump-reacao-lula/" target="_blank" rel="noopener">Gazeta do Povo</a>
+        </span>
+      </div>
+    </div>
+  </article>
+
+
+  <!-- =============== ESPORTE: COPA DO MUNDO =============== -->
+    <h3 class="sec-title">Esporte · 13/07</h3>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Argentina nas semifinais">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <path d="M40 90 L100 30 L160 90 L220 30 L280 90" stroke="#F1F3F5" stroke-width="4" fill="none"/>
+          <circle cx="100" cy="30" r="6" fill="#F1F3F5"/><circle cx="220" cy="30" r="6" fill="#F1F3F5"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">ARGENTINA · SEMIS</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Quartas de final</span>
+      <h3>Julián Álvarez marca golaço na prorrogação e Argentina elimina a Suíça por 3 a 1</h3>
+      <p>Com um jogador a mais desde o segundo tempo, após expulsão de Breel Embolo, a Argentina só desempatou aos 22 minutos da prorrogação, com um chute de fora da área de Álvarez; Lautaro Martínez ampliou logo depois. É a segunda vitória albiceleste na prorrogação nesta Copa.</p>
+      <a class="src-link" href="https://www.espn.com/soccer/story/_/id/49340795/julian-alvarez-extra-screamer-fires-argentina-semifinals-world-cup" target="_blank" rel="noopener">Ler na ESPN →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: Espanha elimina a Bélgica">
+          <rect width="320" height="110" fill="#D6453D"/>
+          <circle cx="160" cy="55" r="30" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">ESPANHA · SEMIS</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Quartas de final</span>
+      <h3>Gol nos acréscimos de Mikel Merino tira a Bélgica e leva a Espanha à semifinal</h3>
+      <p>Fabián Ruiz abriu o placar, De Ketelaere empatou para a Bélgica no 1º tempo — primeiro gol sofrido pela Espanha na Copa —, e o suplente Merino, dois minutos depois de entrar, aproveitou rebote do goleiro belga aos 88 para decretar o 2 a 1.</p>
+      <a class="src-link" href="https://www.espn.com/soccer/story/_/id/49328247/mikel-merino-sends-spain-world-cup-semifinals-beating-belgium-la-roja-need-more-wasteful-attack" target="_blank" rel="noopener">Ler na ESPN →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: chaveamento das semifinais">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <rect x="30" y="20" width="60" height="18" fill="#12181F"/><rect x="30" y="72" width="60" height="18" fill="#12181F"/>
+          <rect x="230" y="20" width="60" height="18" fill="#12181F"/><rect x="230" y="72" width="60" height="18" fill="#12181F"/>
+          <path d="M90 29 H130 M90 81 H130 M130 29 V81 M130 55 H190 M230 29 H190 M230 81 H190" stroke="#12181F" stroke-width="3" fill="none"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">SEMIFINAIS</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Calendário das semifinais</span>
+      <h3>França x Espanha nesta terça (14) e Argentina x Inglaterra na quarta (15) definem os finalistas</h3>
+      <p>É a primeira vez, desde a criação do ranking da Fifa em 1992, que as quatro seleções mais bem colocadas chegam às semifinais. França e Espanha jogam em Arlington (Texas); Argentina e Inglaterra, em Atlanta, em duelo inédito na fase eliminatória de Copas desde 2002.</p>
+      <a class="src-link" href="https://www.skysports.com/football/news/11095/13561909/world-cup-2026-argentina-xx-switzerland" target="_blank" rel="noopener">Ler no Sky Sports →</a>
+    </article>
+
+  </div>
+
+    <h3 class="sec-title">Ceará · 13/07</h3>
+  <div class="world-grid">
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: disputa judicial entre prefeito e ex-ministro">
+          <rect width="320" height="110" fill="#12181F"/>
+          <path d="M160 20 v70 M130 90 h60" stroke="#D6453D" stroke-width="4"/>
+          <circle cx="160" cy="20" r="10" fill="#F1F3F5"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">POLÍTICA · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Política · Eleições 2026</span>
+      <h3>Evandro Leitão processa Ciro Gomes em R$ 130 mil por acusação de recebimento de dinheiro de faccionado</h3>
+      <p>O prefeito de Fortaleza entrou com ações cível e criminal contra o pré-candidato do PSDB ao Governo do Ceará, após Ciro afirmar em entrevista à Veja que Evandro teria recebido, por meio do filho, R$ 20 milhões do ex-prefeito cassado de Choró, ligado ao PCC. A defesa do petista nega qualquer processo criminal ou recebimento de valores de facção.</p>
+      <a class="src-link" href="https://mais.opovo.com.br/colunistas/vertical/2026/07/12/evandro-processa-ciro-em-rs-130-mil.html" target="_blank" rel="noopener">Ler no O POVO (coluna Vertical) →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: convenção do PSDB">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <path d="M60 85 L160 25 L260 85 Z" fill="none" stroke="#F1F3F5" stroke-width="4"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">PSDB · CONVENÇÃO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Política · Eleições 2026</span>
+      <h3>Federação PSDB-Cidadania marca para 20 de julho convenção que deve confirmar Ciro Gomes ao Governo do Ceará</h3>
+      <p>O evento, na Torre Empresarial Iguatemi, deve indicar também posições para as demais vagas da chapa tucana. A campanha de Ciro já roda pelo interior: nesta segunda (13), a comitiva está em Camocim, no Litoral Oeste do Estado.</p>
+      <a class="src-link" href="https://mais.opovo.com.br/colunistas/vertical/2026/07/12/evandro-processa-ciro-em-rs-130-mil.html" target="_blank" rel="noopener">Ler no O POVO (coluna Vertical) →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: convenção do PDT">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <rect x="70" y="35" width="18" height="50" fill="#12181F"/><rect x="100" y="25" width="18" height="60" fill="#12181F"/>
+          <rect x="130" y="35" width="18" height="50" fill="#12181F"/><rect x="160" y="25" width="18" height="60" fill="#12181F"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">PDT · CONVENÇÃO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Política · Eleições 2026</span>
+      <h3>PDT anuncia convenção estadual para 25 de julho no Ginásio Aécio de Borba</h3>
+      <p>André Figueiredo, presidente da sigla no Ceará e novo líder da bancada do PDT na Câmara, apresentou em vídeo alguns dos pré-candidatos a deputado federal do partido, entre eles os vereadores Adail Júnior e Katia Rodrigues.</p>
+      <a class="src-link" href="https://www.opovo.com.br/noticias/politica/eleicoes/2026/07/07/pdt-anuncia-data-de-convencao-para-25-de-julho.html" target="_blank" rel="noopener">Ler no O POVO →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: operação policial Conexão Amazônia">
+          <rect width="320" height="110" fill="#D6453D"/>
+          <path d="M160 20 l38 12 v22 c0 21 -17 33 -38 39 c-21 -6 -38 -18 -38 -39 v-22 Z" fill="#F1F3F5"/>
+          <text x="16" y="100" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">SEGURANÇA · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Segurança pública</span>
+      <h3>Operação Conexão Amazônia cumpre 16 mandados no Ceará em ação nacional contra facções</h3>
+      <p>A etapa cearense, com apoio de forças de Pernambuco, Pará e Amazonas, integrou operação das Ficcos que cumpriu 274 mandados em 16 estados por tráfico interestadual de drogas e lavagem de dinheiro, incluindo sequestro de bens.</p>
+      <a class="src-link" href="https://portaldeprefeitura.com.br/policia/operacao-nacional-cumpre-em-pernambuco-e-outros-15-estados-274/626355/" target="_blank" rel="noopener">Ler no Portal de Prefeitura →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: pavimentação rodoviária no Sertão Central">
+          <rect width="320" height="110" fill="#1971C2"/>
+          <path d="M20 85 H300" stroke="#F1F3F5" stroke-width="6"/>
+          <path d="M20 85 L60 60 M100 85 L140 60 M180 85 L220 60 M260 85 L300 60" stroke="#12181F" stroke-width="4"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">INFRAESTRUTURA · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Infraestrutura</span>
+      <h3>Governo do Ceará autoriza licitação de R$ 34,5 milhões para pavimentar a CE-363 entre Mombaça e Senador Pompeu</h3>
+      <p>O governador Elmano de Freitas autorizou em reunião no Palácio da Abolição a licitação, marcada para 7 de agosto, com recursos do Tesouro Estadual. O projeto inclui drenagem e sinalização no trecho do Sertão Central.</p>
+      <a class="src-link" href="https://www.blogdoamauryalencar.com.br/2026/07/ce-363-entre-mombaca-e-senador-pompeu.html" target="_blank" rel="noopener">Ler no Blog do Amaury Alencar →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: serviço de transporte público">
+          <rect width="320" height="110" fill="#4A5560"/>
+          <rect x="60" y="40" width="200" height="40" rx="8" fill="#F1F3F5"/>
+          <circle cx="100" cy="85" r="10" fill="#12181F"/><circle cx="220" cy="85" r="10" fill="#12181F"/>
+          <text x="16" y="105" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">MOBILIDADE · FORTALEZA</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Serviço · Fortaleza</span>
+      <h3>Parada de ônibus é reinstalada em frente à Igreja da Glória nesta segunda (13)</h3>
+      <p>O ponto na avenida Desembargador Gonzaga, na Cidade dos Funcionários, havia sido deslocado 100 metros no início do mês; após "escuta da população", a Etufor decidiu reverter a mudança e devolver o abrigo ao local original.</p>
+      <a class="src-link" href="https://www.opovo.com.br/noticias/fortaleza/2026/07/10/parada-de-onibus-sera-reinstalada-em-frente-a-igreja-da-gloria.html" target="_blank" rel="noopener">Ler no O POVO →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: calendário e feriados">
+          <rect width="320" height="110" fill="#B07C10"/>
+          <rect x="60" y="25" width="200" height="60" rx="6" fill="#F1F3F5"/>
+          <rect x="60" y="25" width="200" height="18" fill="#12181F"/>
+          <text x="16" y="105" fill="#12181F" font-family="Arial" font-size="11" font-weight="bold">SERVIÇO</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Serviço</span>
+      <h3>13 de julho não é feriado em nenhum município do Ceará</h3>
+      <p>A data é feriado municipal em 11 cidades de outros estados, mas julho segue sem folgas gerais em Fortaleza ou no interior cearense — a próxima só chega em 15 de agosto, Dia de Nossa Senhora da Assunção, padroeira da capital.</p>
+      <a class="src-link" href="https://www.opovo.com.br/noticias/curiosidades/2026/07/13/hoje-13-de-julho-e-feriado-veja-onde-e-quem-folga.html" target="_blank" rel="noopener">Ler no O POVO →</a>
+    </article>
+
+    <article class="w-card">
+      <div class="cover">
+        <svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração: futebol cearense na Série B">
+          <rect width="320" height="110" fill="#12181F"/>
+          <circle cx="160" cy="55" r="28" fill="none" stroke="#D6453D" stroke-width="4"/>
+          <path d="M160 27 V83 M132 55 H188" stroke="#D6453D" stroke-width="3"/>
+          <text x="16" y="100" fill="#F1F3F5" font-family="Arial" font-size="11" font-weight="bold">FUTEBOL · CE</text>
+        </svg>
+      </div>
+      <span class="w-kicker">Esporte regional · Série B</span>
+      <h3>Ceará Sporting Club enfrenta o Athletic Club-MG nesta segunda (13), às 20h30, pela Série B</h3>
+      <p>O alvinegro entra em campo na rodada de segunda-feira do Brasileiro da Série B 2026, em jogo direto de cearenses na competição nacional.</p>
+      <a class="src-link" href="https://www.cnnbrasil.com.br/" target="_blank" rel="noopener">Ler na CNN Brasil →</a>
+    </article>
+
+  </div>
+
+  </section>
+
+  <footer>
+    <p><strong>Como ler o PRISMA:</strong> o bloco "O fato" é a base neutra apurada em múltiplas fontes. As abas mostram como cada campo enquadra o mesmo fato — o viés está no destaque e no silêncio, não nos fatos. Onde a leitura é análise minha (e não texto publicado por um veículo na data desta edição), está marcada como "leitura analítica do campo".</p>
+    <p><strong>Sobre a meta de até 10 matérias no Brasil:</strong> na apuração de hoje, encontrei sourcing honesto (artigo real, atribuível a um veículo de cada campo, com texto publicado especificamente sobre o fato) para 2 matérias de Brasil com tratamento nas três leituras — a suspensão das visitas de Flávio Bolsonaro ao pai, determinada por Moraes, e o impasse do tarifaço dos EUA a um dia do prazo de 15/7. Tentei ativamente uma terceira candidata: o fato de que a PEC do fim da escala 6x1 não será votada antes do recesso (confirmado hoje pela Agência Brasil, que não a despachou para a CCJ). Encontrei apenas a leitura de centro atribuível a um texto publicado hoje sobre esse fato específico; não localizei, na apuração de hoje, artigo de esquerda ou de direita tratando dessa mesma atualização (o volume de cobertura anterior sobre o impasse Alcolumbre x governo, embora grande, é de datas anteriores e já foi tratado em edições passadas). Prefiro entregar 2 matérias com as três leituras completas a forçar uma terceira com leitura incompleta ou atribuições que os veículos não escreveram sobre o fato de hoje.</p>
+    <p><strong>Sobre o Ceará:</strong> a meta é de até 10 itens; hoje apurei, com sourcing honesto e data-ancorada, 3 itens (chapa governista, Transnordestina/radioterapia e balanço de segurança pública). Isso não é uma falha pontual: no dia a dia da cobertura estadual, muitos fatos "do dia" são, na prática, desdobramentos de agendas de dias anteriores, e o compromisso de não construir URLs nem atribuir fala a quem não a proferiu reduz o número final.</p>
+    <p><strong>Aba "Ontem":</strong> guarda a edição imediatamente anterior do PRISMA (13/07/2026). A cada nova edição, esta aba passa a arquivar a que acabou de ser substituída — por isso a edição de 10/07/2026, que estava arquivada, não consta mais aqui.</p>
+    <p><strong>Definição das lentes:</strong> Esquerda = progressista/governista · Centro = factual-institucional, definido por comportamento — noticiar os dois lados, evitar adjetivação (agências, imprensa de mercado) · Direita = conservadora/oposicionista.</p>
+    <p><strong>Ceará:</strong> seção em formato manchete + fonte (sem as 3 lentes). Itens oficiais do governo estadual ou municipal estão marcados como tal.</p>
+    <p><strong>Esporte:</strong> seção dedicada à Copa do Mundo 2026, em formato manchete + fonte, sem as 3 lentes.</p>
+    <p><strong>Limites:</strong> edição de 14/07/2026 — este arquivo não se atualiza sozinho. Capas são ilustrações originais; as fotos jornalísticas pertencem aos veículos e estão nos links de origem.</p>
+  </footer>
+
+</div>
+
+<script>
+  // Tabs: one tab group per story card
+  document.querySelectorAll('[data-story]').forEach(function(story){
+    var tabs = story.querySelectorAll('.tab');
+    var panels = story.querySelectorAll('.panel');
+    tabs.forEach(function(tab, i){
+      tab.addEventListener('click', function(){
+        tabs.forEach(function(t){ t.setAttribute('aria-selected','false'); });
+        panels.forEach(function(p){ p.classList.remove('active'); });
+        tab.setAttribute('aria-selected','true');
+        panels[i].classList.add('active');
+      });
+    });
+  });
+  // Detail expand/collapse
+  document.querySelectorAll('[data-detail]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var detail = btn.closest('.panel').querySelector('.detail');
+      var open = detail.classList.toggle('open');
+      btn.textContent = open ? 'Recolher −' : 'Detalhar +';
+    });
+  });
+
+  // Seletor global de lente (rail lateral / barra inferior)
+  var railBtns = document.querySelectorAll('.lens-rail button');
+  function applyLens(val){
+    railBtns.forEach(function(b){
+      b.setAttribute('aria-pressed', b.dataset.lens === String(val) ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-story]').forEach(function(story){
+      var tabs = story.querySelectorAll('.tab');
+      var panels = story.querySelectorAll('.panel');
+      if (val === 'all'){ story.classList.add('compare'); return; }
+      story.classList.remove('compare');
+      tabs.forEach(function(t){ t.setAttribute('aria-selected','false'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tabs[val].setAttribute('aria-selected','true');
+      panels[val].classList.add('active');
+    });
+  }
+  railBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = b.dataset.lens;
+      applyLens(v === 'all' ? 'all' : parseInt(v,10));
+    });
+  });
+  // Clique em aba individual desliga o estado global do rail
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.tab')){
+      railBtns.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+    }
+  });
+  // Padrão de abertura: as 3 leituras juntas (comparação)
+  applyLens('all');
+
+  // Ótica de cobertura: Tudo / Brasil / Mundo / Ceará / Esporte / Ontem
+  var scopeBtns = document.querySelectorAll('.scope');
+  scopeBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      scopeBtns.forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      var v = b.dataset.scope;
+      document.querySelectorAll('section[data-scope]').forEach(function(sec){
+        sec.classList.toggle('hidden', v !== 'all' && sec.dataset.scope !== v);
+      });
+    });
+  });
+</script>
+</body>
+</html>
